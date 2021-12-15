@@ -1,6 +1,7 @@
 Note: Before running the playbooks in this repository, download the dataset from:
 https://www.kaggle.com/tunguz/big-five-personality-test
 
-Save it in the assets folder as data.csv, and the playbooks should work as expected.
+Save it in the assets folder as data.csv, and the playbooks should work as expected. 
+For more information about what is contained in the data.csv file, see the files in the data directory.
 
 For more information about the project, see the report.
