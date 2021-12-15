@@ -1,0 +1,4 @@
+- name: Copy server.properties
+  copy:
+    src: /home/vagrant/assets/db-server.properties  
+    dest: /home/cc/kafka/config/server.properties   

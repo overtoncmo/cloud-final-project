@@ -1,0 +1,51 @@
+- name: Create ApacheVM
+  openstack.cloud.server:
+    cloud: openstack
+    state: present
+    name: t2-apache-vm
+    image: CC-Ubuntu20.04
+    flavor: m1.medium
+    key_name: cloud-computing
+    timeout: 300
+    security_groups:
+      - ENABLE_SSH
+      - ENABLE_KAFKA_COUCHDB
+      - ENABLE_HTTP_HTTPS
+      - ENABLE_ICMP
+      - ENABLE_K8S
+      - ENABLE_KAFKA_COUCH_SSH
+      - ENABLE_DB
+      - ENABLE_MYSQL
+      - ENABLE_WIREGUARD
+      - Enable_coch
+    floating_ips: 129.114.27.202
+    availability_zone: nova
+    nics:
+      - net-id: 4b484898-92b4-4a4b-9c5d-7d55bd72f1ee
+    wait: yes
+
+- name: Create MySQLVM
+  openstack.cloud.server:
+    cloud: openstack
+    state: present
+    name: t2-mysql-vm
+    image: CC-Ubuntu20.04
+    flavor: m1.medium
+    key_name: cloud-computing
+    timeout: 300
+    security_groups:
+      - ENABLE_SSH
+      - ENABLE_KAFKA_COUCHDB
+      - ENABLE_HTTP_HTTPS
+      - ENABLE_ICMP
+      - ENABLE_K8S
+      - ENABLE_KAFKA_COUCH_SSH
+      - ENABLE_WIREGUARD
+      - ENABLE_DB
+      - ENABLE_MYSQL
+      - Enable_coch
+    floating_ips: 129.114.25.202
+    availability_zone: nova
+    nics:
+      - net-id: 4b484898-92b4-4a4b-9c5d-7d55bd72f1ee
+    wait: yes

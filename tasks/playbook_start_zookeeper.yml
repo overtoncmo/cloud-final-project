@@ -1,0 +1,11 @@
+- name: Delete Logs
+  command:  rm -fr /tmp/kafka-logs
+  register: output
+  become: no
+  
+- name: Start Zookeeper
+  command: /home/cc/kafka/bin/zookeeper-server-start.sh /home/cc/kafka/config/zookeeper.properties
+  register: output
+  become: no
+  async: 99999
+  poll: 0

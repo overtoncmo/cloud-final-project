@@ -1,0 +1,36 @@
+- name: Begin Installing Apache
+  command: apt-get update 
+  register: output
+  become: yes
+
+- name: Install Apache
+  apt: name=apache2 state=latest
+  become: yes
+
+- name: Add Apache UFW Rule
+  command: ufw allow 'Apache'
+  register: output
+  become: yes
+
+- name: Restart Apache
+  command: systemctl restart apache2
+  register: output
+  become: yes
+
+- name: Update apt
+  command: apt-get update 
+  register: output
+  become: yes
+
+- name: Install PHP
+  apt: name=libapache2-mod-php state=latest
+  become: yes
+
+- name: Install MySQL Driver for PHP
+  apt: name=php7.4-mysql state=latest
+  become: yes
+
+- name: Restart Apache
+  command: systemctl restart apache2
+  register: output
+  become: yes

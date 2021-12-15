@@ -1,0 +1,20 @@
+#
+# Author: Aniruddha Gokhale
+# CS4287-5287 Principles of Cloud Computing
+# Created: Fall 2018
+# Modified: Fall 2020
+#
+
+
+[MyLocalVMs]
+127.0.0.1  ansible_connection=local
+
+[ApacheVM]
+129.114.27.202 ansible_connection=ssh ansible_ssh_private_key_file="/home/vagrant/.ssh/cloud-computing.pem"
+
+[MySQLVM]
+129.114.25.202 ansible_connection=ssh ansible_ssh_private_key_file="/home/vagrant/.ssh/cloud-computing.pem"
+
+[MyChameleonVMs]
+129.114.27.202 ansible_connection=ssh ansible_ssh_private_key_file="/home/vagrant/.ssh/cloud-computing.pem"
+129.114.25.202 ansible_connection=ssh ansible_ssh_private_key_file="/home/vagrant/.ssh/cloud-computing.pem"

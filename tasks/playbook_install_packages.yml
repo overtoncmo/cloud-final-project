@@ -1,0 +1,64 @@
+- name: Begin Installing Packages
+  command: apt-get update 
+  register: output
+  become: yes
+
+- name: Install Python3
+  apt: name=python3-pip state=latest
+  become: yes
+
+- name: Upgrade pip
+  command: python3 -m pip install --upgrade pip
+  register: output
+  become: yes
+
+# INSTALL KAFKA
+
+- name: Get Java
+  apt: name=openjdk-11-jdk state=latest
+  become: yes
+
+- name: Delete Kafka Directories
+  command:  rm -rf /home/cc/kafka-download /home/cc/kafka
+  register: output
+  become: no
+
+- name: Make Directory for Kafka
+  command: mkdir -p /home/cc/kafka-download 
+  register: output
+  become: no
+
+- name: Download Kafka
+  command: curl "https://dlcdn.apache.org/kafka/3.0.0/kafka_2.13-3.0.0.tgz" -o /home/cc/kafka-download/kafka.tgz
+  register: output
+  become: no
+
+- name: Extract Kafka
+  command: tar -xzf /home/cc/kafka-download/kafka.tgz
+  register: output
+  become: no
+
+- name: Rename Kafka Directory
+  command: mv /home/cc/kafka_2.13-3.0.0 /home/cc/kafka
+  register: output
+  become: no
+
+- name: Install Kafka for Python
+  command: python3 -m pip install kafka-python
+  register: output
+  become: yes
+
+- name: Copy consumer.py
+  copy:
+    src: ~/assets/consumer.py   
+    dest: /home/cc/   
+
+- name: Copy producer.py
+  copy:
+    src: ~/assets/producer.py   
+    dest: /home/cc/   
+
+- name: Copy data.csv
+  copy:
+    src: ~/assets/data.csv   
+    dest: /home/cc/   

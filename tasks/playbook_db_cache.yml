@@ -1,0 +1,11 @@
+- name: Copy Cache Script
+  copy:
+    src: ~/assets/cache-query-results.py   
+    dest: /home/cc/   
+
+- name: Create DB Cache
+  command: python3 /home/cc/cache-query-results.py
+  register: output
+  become: no
+  async: 99999
+  poll: 0

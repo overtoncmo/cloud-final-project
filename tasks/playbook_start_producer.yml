@@ -1,0 +1,6 @@
+- name: Start Producer
+  command: python3 ~/producer.py
+  register: output
+  become: no
+  async: 99999
+  poll: 0

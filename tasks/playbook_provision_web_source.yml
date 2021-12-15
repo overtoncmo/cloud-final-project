@@ -1,0 +1,4 @@
+- name: Copy Web Source Code
+  copy:
+    src: ~/src/
+    dest: /var/www/html/

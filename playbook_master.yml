@@ -1,0 +1,186 @@
+---
+############################################################################
+###### Master playbook to create cloud VMs and deploy the application ######
+############################################################################
+
+# Create VMs on Chameleon
+- name: "Play 1: Create Cloud VMs"
+  hosts: MyLocalVMs          # specified in the MyInventory file
+  remote_user:  ubuntu      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: no            # No need for sudo as we are not installing anything
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+    - import_tasks: tasks/playbook_create_cloud_vms.yml
+
+
+# Install all relevant Python and apt packages
+- name: "Play 2: Install Packages"
+  hosts: MyChameleonVMs          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: yes
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+    - import_tasks: tasks/playbook_install_packages.yml
+
+
+# Configure Apache server
+- name: "Play 3: Configure Apache Server"
+  hosts: ApacheVM          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: no
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_install_apache.yml
+
+
+# Configure MySQL Database on database VM
+- name: "Play 4: Configure MySQL DB"
+  hosts: MySQLVM          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: yes
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_configure_mysql.yml
+
+
+# Update web source files to be served
+- name: "Play 5: Provision Web App Source Code"
+  hosts: ApacheVM         # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: yes
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_provision_web_source.yml
+
+
+  # Copy Kafka config files to Apache VM
+- name: "Play 6: Configure Kafka on ApacheVM"
+  hosts: ApacheVM          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: no
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_configure_kafka_zookeeper.yml
+
+
+# Copy Kafka config files to database VM
+- name: "Play 7: Configure Kafka on DB VM"
+  hosts: MySQLVM          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: no
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_configure_kafka_db.yml
+
+
+# Set UFW rules
+- name: "Play 8: Set UFW Rules"
+  hosts: MyChameleonVMs          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: no
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_set_ufw_rules.yml
+
+
+# Start Zookeeper
+- name: "Play 9: Start Zookeeper"
+  hosts: ApacheVM          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: yes          # We ask Ansible to collect all facts
+  become: no
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_start_zookeeper.yml
+
+
+# Start Kafka brokers
+- name: "Play 10: Start Brokers"
+  hosts: MyChameleonVMs          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: yes          # We ask Ansible to collect all facts
+  become: no
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_start_brokers.yml
+
+
+# Execute consumer
+- name: "Play 11: Start Consumer"
+  hosts: MySQLVM          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: yes          # We ask Ansible to collect all facts
+  become: no
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_start_consumer.yml
+
+
+# Execute producer
+- name: "Play 12: Start Producer"
+  hosts: ApacheVM          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: yes          # We ask Ansible to collect all facts
+  become: no
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_start_producer.yml
+
+
+# Create cache table
+- name: "Play 13: Create DB Cache"
+  hosts: MySQLVM          # specified in the MyInventory file
+  remote_user:  cc      # note that the user is ubuntu for
+                             # vagrant-created VM else use the
+                             # appropriate user name
+
+  gather_facts: no          # We ask Ansible to collect all facts
+  become: yes
+
+  tasks:    # the task to be performed (here I am showing the effect of include_)
+  - import_tasks: tasks/playbook_db_cache.yml
+

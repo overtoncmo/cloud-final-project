@@ -1,0 +1,11 @@
+- name: Start consumer
+  command: python3 ~/consumer.py
+  register: output
+  become: no
+  async: 99999
+  poll: 0
+
+  
+- name: Pause for 15 seconds to wait for consumer to start
+  pause:
+    seconds: 15

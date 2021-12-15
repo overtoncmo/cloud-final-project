@@ -1,0 +1,88 @@
+- name: Begin Installing MySQL
+  command: apt-get update 
+  register: output
+  become: yes
+
+- name: Install MySQL
+  apt: name=mysql-server state=latest
+  become: yes
+
+- name: Run Secure Configuration Script
+  ansible.builtin.expect:
+    command: sudo mysql_secure_installation
+    echo: yes
+    responses:
+      'Enter current password for root \(enter for none\)': "\n"
+      'Set root password\?': 'y'
+      'Please set the password for root here': 'root'
+      'Re\-enter new password': 'root'
+      'Remove anonymous users\?': 'y'
+      'Disallow root login remotely\? \(Press y\|Y for Yes\, any other key for No\)': 'y'
+      'Remove test database and access to it\? \(Press y\|Y for Yes\, any other key for No\)': 'y'
+      'Reload privilege tables now\? \(Press y\|Y for Yes\, any other key for No\)': 'y'
+      'Would you like to setup VALIDATE PASSWORD component\?': 'n'
+
+- name: Add MySQL UFW Rule
+  command: ufw allow 3306/tcp
+  register: output
+  become: yes
+
+- name: Copy MySQL Config
+  copy:
+    src: ~/assets/mysqld.cnf 
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf  
+
+- name: Restart MySQL Server
+  command: systemctl restart mysql
+  register: output
+  become: yes
+
+- name: Install Python MySQL Driver Part 1
+  apt: name=libmysqlclient-dev state=latest
+  become: yes
+
+- name: Install Python MySQL Driver Part 2
+  apt: name=python-dev state=latest
+  become: yes
+
+- name: Install Python MySQL Part 1
+  command: python3 -m pip install mysql
+  register: output
+  become: no
+
+- name: Install Python MySQL Part 2
+  command: python3 -m pip install mysql-connector-python
+  register: output
+  become: no
+
+# CREATE DB USERS
+
+- name: Create DB User for MySQLVM
+  command: mysql -e "CREATE USER 'admin'@'129.114.25.202' IDENTIFIED BY 'admin';"
+  register: output
+  become: yes
+
+- name: Grant DB User on MySQLVM
+  command: mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'129.114.25.202';"
+  register: output
+  become: yes
+
+- name: Create DB User for ApacheVM
+  command: mysql -e "CREATE USER 'admin'@'129.114.27.202' IDENTIFIED BY 'admin';"
+  register: output
+  become: yes
+
+- name: Grant DB User on ApacheVM
+  command: mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'129.114.27.202';"
+  register: output
+  become: yes
+
+- name: Drop Big Five Personality DB
+  command: mysql -e "DROP DATABASE IF EXISTS big_five_db;"
+  register: output
+  become: yes
+
+- name: Create Big Five Personality DB
+  command: mysql -e "CREATE DATABASE IF NOT EXISTS big_five_db;"
+  register: output
+  become: yes
